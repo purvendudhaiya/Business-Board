@@ -61,64 +61,62 @@ class Board:
         pygame.draw.rect(DISPLAY, BLACK, (0, 0, 1200, 80))
         DISPLAY.blit(message_surface, (30, 30))
 
-    @classmethod
-    def clear_top_message(cls):
-        configs.message_surface = myfont.render(configs.MESSAGE, False, BLACK)
-        DISPLAY.blit(configs.message_surface, (30, 30))
-
-    @classmethod
-    def print_top_message(cls, message):
-        configs.MESSAGE = message
-        configs.message_surface = myfont.render(configs.MESSAGE, False, WHITE)
-        DISPLAY.blit(configs.message_surface, (30, 30))
+        # moved the class methods to configs.py.  Works GREAAAAAT ! can use those in other modules also now.
             
 
 
 
 class Player:
     count = 0
-    player_patch = pygame.Surface((20, 20))
+    player_patch = pygame.Surface((20, 20))  # white patch for the player
     player_patch.fill(WHITE)
-
+    player_details_patch = pygame.Surface((100, 30))  # background patch for player's balance
+    player_details_patch.fill(BGCOLOR)
 
     def __init__(self, name, player_color):
         self.name = name
+        self.balance = 1000
         self.player_color = player_color
-        self.player_pos = -1
+        self.player_pos = 0
         self.player_surface = pygame.Surface((20, 20))
         self.player_surface.fill(player_color)
         Player.count += 1
         self.pos_x = 290 + (2 * Player.count - 1)* 20 
         self.pos_y = 590
-        DISPLAY.blit(self.player_surface, (self.pos_x, self.pos_y)) 
-
+        self.name_pos_x = 10                                                        # x coordinate for player's name surface
+        self.name_pos_y = 350 + (2 * Player.count - 1)* 20
+        self.balance_pos_x = 100                                                    # x coordinate for player's balance surface 
+        self.balance_pos_y = self.name_pos_y
+        DISPLAY.blit(self.player_surface, (self.pos_x, self.pos_y))
+        self.player_name_surface = myfont.render(self.name, False, self.player_color)
+        DISPLAY.blit(self.player_name_surface, (self.name_pos_x, self.name_pos_y))
+        self.player_balance_surface = myfont.render(str(self.balance)+" ₹", False, self.player_color)
+        DISPLAY.blit(self.player_balance_surface, (self.balance_pos_x, self.balance_pos_y))
     
+    def update_balance(self):
+        """updates the particular player's balance in GUI"""
+        DISPLAY.blit(Player.player_details_patch, (self.balance_pos_x, self.balance_pos_y))
+        self.player_balance_surface = myfont.render(str(self.balance)+" ₹", False, self.player_color)
+        DISPLAY.blit(self.player_balance_surface, (self.balance_pos_x, self.balance_pos_y))
+
     def roll_dice(self):
-        #global MESSAGE
         dice_value = random.randint(1,6)
-
-        Board.clear_top_message()
-        Board.print_top_message(str(dice_value))
+        clear_top_message()
+        write_top_message(str(dice_value))
         return dice_value
-        # message_surface = myfont.render(configs.MESSAGE, False, BLACK)
-        # DISPLAY.blit(message_surface, (30, 30))
 
-        # configs.MESSAGE = str(dice_value)
-
-        # message_surface = myfont.render(configs.MESSAGE, False, WHITE)
-        # DISPLAY.blit(message_surface, (30, 30))
-    def move(self, steps):
+    def move(self, steps, b):
         
         for i in range(1, steps+1):
             DISPLAY.blit(Player.player_patch, (self.pos_x, self.pos_y))
             self.player_pos = (self.player_pos + 1) % 16
-            if self.player_pos//4 == 0:
+            if (self.player_pos - 1)//4 == 0:
                 self.pos_y -= 120
-            if self.player_pos//4 == 1:
+            if (self.player_pos - 1)//4 == 1:
                 self.pos_x += 120
-            if self.player_pos//4 == 2:
+            if (self.player_pos - 1)//4 == 2:
                 self.pos_y += 120
-            if self.player_pos//4 == 3:
+            if (self.player_pos -1)//4 == 3:
                 self.pos_x -= 120
             
             pygame.display.update()
@@ -128,19 +126,19 @@ class Player:
 
             pygame.display.update()
             pygame.time.Clock().tick(5)
+        
+        print(self.player_pos)
+        (b.square_list[self.player_pos]).action(self)
 
-
-
-    def reached_a_square(self,square):
-        pass
 
 b = Board()
 b.draw_board()
-p1=Player('Vatsal', RED)
+p1 = Player('Vatsal', RED)
 p2 = Player('Dhruv', BLUE)
 p3 = Player('Purven', GREEN)
 val = p1.roll_dice()
-p1.move(val)
+p1.move(val, b)
+# p2.move(16)
 
 while True:
     for event in pygame.event.get():

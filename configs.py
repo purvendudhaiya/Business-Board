@@ -7,6 +7,7 @@ myfont = pygame.font.SysFont('Comic Sans MS', 20)
 DISPLAY=pygame.display.set_mode((1200, 800), 0, 32)
 MESSAGE = 'WELCOME TO BUSINESS BOARD '
 message_surface = myfont.render(MESSAGE, False, (0, 0, 0))
+top_message_patch = pygame.Surface((1200, 80))
 
 BGCOLOR = (255, 255, 102)
 BLACK = (0, 0, 0)
@@ -15,7 +16,11 @@ BLUE = (0, 0, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 
-def print_mess():
-    print(MESSAGE)
+def clear_top_message():
+    print("Inside Clear top")
+    DISPLAY.blit(top_message_patch, (0,0))
 
-    
+def write_top_message(message):
+    print("inside write top")
+    DISPLAY.blit(myfont.render(message, False, WHITE), (30, 30))
+    print("wrote - inside one")

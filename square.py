@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
-from configs import DISPLAY, BLACK, WHITE, RED, GREEN, BLUE, myfont
+import configs
+from configs import *
 
 class Square:
     """classes for squares on the board"""
@@ -14,7 +15,7 @@ class City(Square):
         super().__init__(name)
         self.price = price
         self.tax = price//10
-        self.owner = WHITE 
+        self.color = WHITE 
     
     def change_color(self, color):
         self.color = color
@@ -33,18 +34,26 @@ class City(Square):
         pricesurface = myfont.render(str(self.price)+" ₹", False, (0, 0, 0))
         DISPLAY.blit(pricesurface, (pos_x + 10, pos_y + 70))
     
+    def action(self, player):
+        """Takes all the appropriate actions on reaching a City"""
+        if self.color == WHITE and player.balance >= self.price:
+            clear_top_message()
+            write_top_message("Do you want to buy {} ? (Y / N) - Enter in terminal".format(self.name))
+            pygame.display.update()
+            answer = input()
+            if answer == 'Y':
+                self.buy(player)    
+
     def fill_bar(self, color):
         pygame.draw.rect(DISPLAY, color, (self.pos_x, self.pos_y + 100, 120, 20), 0)
     
     def buy(self, player):
 
-        self.owner = player.player_color
+        self.color = player.player_color
+        player.balance -= self.price
+        player.update_balance()
         self.fill_bar(player.player_color)
     
-    
-
-
-
 
 
 class StartSquare(Square):
@@ -61,7 +70,7 @@ class StartSquare(Square):
 class Jail(Square):
 
     def __init__(self, penalty):
-        super().__init__('jail')
+        super().__init__('Jail')
         self.penalty = penalty
 
     def draw_square(self, pos_x, pos_y):
