@@ -1,4 +1,4 @@
-from square import Square, StartSquare, City, Jail
+from square import *
 import pygame
 import random
 from pygame.locals import *
@@ -12,21 +12,21 @@ class Board:
     def __init__(self):
         self.square_list= [
             StartSquare(100),
-            City('Baroda', 200),
-            City('Surat', 200),
-            City('Valsad', 200),
-            City('Rest Here', 0),
-            City('Mumbai', 200),
-            City('Pune', 200),
-            City('Goa', 200),
+            City('Baroda', 250),
+            City('Surat', 320),
+            City('Valsad', 300),
+            RestHere(),
+            City('Mumbai', 400),
+            City('Pune', 300),
+            City('Goa', 400),
             Jail(100),
             City('Chennai', 200),
-            City('Agra', 200),
-            City('Kochi', 200),
-            City('Surprise',0),
-            City('Jammu', 200),
-            City('Delhi', 200),
-            City('Kolkata', 200)
+            City('Agra', 250),
+            City('Kochi', 180),
+            Surprise(),
+            City('Jaipur', 220),
+            City('Delhi', 280),
+            City('Kolkata', 250)
             ]
 
 
@@ -101,10 +101,44 @@ class Player:
         DISPLAY.blit(self.player_balance_surface, (self.balance_pos_x, self.balance_pos_y))
 
     def roll_dice(self, b):
-        dice_value = random.randint(1,6)
         clear_top_message()
-        write_top_message(str(dice_value))
-        self.move(dice_value, b)
+        write_top_message("{}, press D to roll dice..".format(self.name))
+
+        while True:
+                flag = 0
+                pygame.display.update()
+                pygame.time.Clock().tick(1)
+
+                for event in pygame.event.get():
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == K_d:
+
+                            # for i in range(10):
+                            #     pygame.time.Clock().tick(3)
+                            #     clear_top_message()
+                            #     if i % 3 == 0:
+                            #         s = '|'
+                            #     elif i % 3 == 1:
+                            #         s = '/'
+                            #     else:
+                            #         s = '\\'
+                            #     write_top_message("Rolling Dice......{}".format(s))
+
+                            flag = 1
+                            dice_value = random.randint(1,6)
+                            clear_top_message()
+                            write_top_message(str(dice_value))
+                            self.move(dice_value, b)
+                            break
+                        if event.key == K_ESCAPE:
+                            exit(1)
+                if flag == 1:
+                    break
+
+        # dice_value = random.randint(1,6)
+        # clear_top_message()
+        # write_top_message(str(dice_value))
+        # self.move(dice_value, b)
 
     def move(self, steps, b):
         

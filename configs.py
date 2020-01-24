@@ -3,7 +3,7 @@ from pygame.locals import *
 
 pygame.init()
 pygame.font.init() 
-myfont = pygame.font.SysFont('Comic Sans MS', 20)
+myfont = pygame.font.SysFont('dejavusans', 20)
 DISPLAY=pygame.display.set_mode((1200, 800), 0, 32)
 MESSAGE = 'WELCOME TO BUSINESS BOARD '
 message_surface = myfont.render(MESSAGE, False, (0, 0, 0))
@@ -23,6 +23,6 @@ def clear_top_message():
 
 def write_top_message(message):
     print("inside write top")
-    DISPLAY.blit(myfont.render(message, False, WHITE), (30, 30))
+    DISPLAY.blit(myfont.render(message, True, WHITE), (30, 30))
     print("wrote - inside one")
     pygame.display.update()

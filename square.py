@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 import configs
 from configs import *
+import random
 
 class Square:
     """classes for squares on the board"""
@@ -38,7 +39,7 @@ class City(Square):
         """Takes all the appropriate actions on reaching a City"""
         if self.color == WHITE and player.balance >= self.price:
             clear_top_message()
-            write_top_message("Do you want to buy {} ? (Y / N) - Enter in terminal".format(self.name))
+            write_top_message("{}, do you want to buy {} ? (Y / N) - Enter in terminal".format(player.name, self.name))
             pygame.display.update()
             
             # for taking apt user input
@@ -60,7 +61,13 @@ class City(Square):
                             exit(1)
                 if flag == 1:
                     break
+        elif player.player_color != self.color:
+            if player.balance >= self.tax:
+                pass
+                # receiving_player = find_player_by_color(self.color)
 
+                # player.balance -= tax
+                
             # pygame.display.update()
             # pygame.time.Clock().tick(1)
 
@@ -89,6 +96,46 @@ class StartSquare(Square):
     
     def action(self, player):
         player.balance+=100
+
+class RestHere(Square):
+
+    def __init__(self):
+        super().__init__('Rest Here')
+
+    def draw_square(self, pos_x, pos_y):
+        pygame.draw.rect(DISPLAY, BLACK, (pos_x, pos_y, 120, 120), 1)
+        namesurface = myfont.render(self.name, False, (0, 0, 0))
+        DISPLAY.blit(namesurface, (pos_x + 10, pos_y + 40))
+    
+    def action(self, player):
+        pass
+
+class Surprise(Square):
+
+    def __init__(self):
+        super().__init__('Surprise')
+
+    def draw_square(self, pos_x, pos_y):
+        pygame.draw.rect(DISPLAY, BLACK, (pos_x, pos_y, 120, 120), 1)
+        namesurface = myfont.render(self.name, False, (0, 0, 0))
+        DISPLAY.blit(namesurface, (pos_x + 10, pos_y + 40))
+    
+    def action(self, player):
+        
+        surprise_number = random.randint(1,2)
+
+        if surprise_number == 1:
+            clear_top_message()
+            write_top_message("SURPRISE ! Give 100 rs. to Bank")
+            pygame.time.Clock().tick(0.5)
+            player.balance -= 100
+            player.update_balance()
+        elif surprise_number == 2:
+            clear_top_message()
+            write_top_message("SURPRISE ! You received 200 rs. from Bank")
+            pygame.time.Clock().tick(0.5)
+            player.balance += 200
+            player.update_balance()
     
 class Jail(Square):
 
