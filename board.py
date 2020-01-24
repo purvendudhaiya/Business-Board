@@ -80,6 +80,7 @@ class Player:
         self.player_pos = 0
         self.player_surface = pygame.Surface((20, 20))
         self.player_surface.fill(player_color)
+        self.turn_flag = 0
         Player.count += 1
         self.pos_x = 290 + (2 * Player.count - 1)* 20 
         self.pos_y = 590
@@ -99,25 +100,26 @@ class Player:
         self.player_balance_surface = myfont.render(str(self.balance)+" ₹", False, self.player_color)
         DISPLAY.blit(self.player_balance_surface, (self.balance_pos_x, self.balance_pos_y))
 
-    def roll_dice(self):
+    def roll_dice(self, b):
         dice_value = random.randint(1,6)
         clear_top_message()
         write_top_message(str(dice_value))
-        return dice_value
+        self.move(dice_value, b)
 
     def move(self, steps, b):
         
         for i in range(1, steps+1):
             DISPLAY.blit(Player.player_patch, (self.pos_x, self.pos_y))
-            self.player_pos = (self.player_pos + 1) % 16
-            if (self.player_pos - 1)//4 == 0:
+            
+            if (self.player_pos)//4 == 0:
                 self.pos_y -= 120
-            if (self.player_pos - 1)//4 == 1:
+            if (self.player_pos)//4 == 1:
                 self.pos_x += 120
-            if (self.player_pos - 1)//4 == 2:
+            if (self.player_pos)//4 == 2:
                 self.pos_y += 120
-            if (self.player_pos -1)//4 == 3:
+            if (self.player_pos)//4 == 3:
                 self.pos_x -= 120
+            self.player_pos = (self.player_pos + 1) % 16
             
             pygame.display.update()
             pygame.time.Clock().tick(5)
@@ -129,6 +131,12 @@ class Player:
         
         print(self.player_pos)
         (b.square_list[self.player_pos]).action(self)
+    
+    def take_turn(self, b):
+        if self.turn_flag == 0:
+            self.roll_dice(b)
+        else:
+            self.turn_flag += 1
 
 
 b = Board()
@@ -136,8 +144,13 @@ b.draw_board()
 p1 = Player('Vatsal', RED)
 p2 = Player('Dhruv', BLUE)
 p3 = Player('Purven', GREEN)
-val = p1.roll_dice()
-p1.move(val, b)
+player_list = [p1,p2,p3]
+while True:
+    for i in player_list:
+        i.take_turn(b)
+        pygame.display.update()
+# val = p1.roll_dice()
+# p1.move(val, b)
 # p2.move(16)
 
 while True:

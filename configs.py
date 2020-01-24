@@ -19,8 +19,10 @@ GREEN = (0, 255, 0)
 def clear_top_message():
     print("Inside Clear top")
     DISPLAY.blit(top_message_patch, (0,0))
+    pygame.display.update()
 
 def write_top_message(message):
     print("inside write top")
     DISPLAY.blit(myfont.render(message, False, WHITE), (30, 30))
     print("wrote - inside one")
+    pygame.display.update()

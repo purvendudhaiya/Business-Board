@@ -29,9 +29,9 @@ class City(Square):
         self.pos_x = pos_x
         self.pos_y = pos_y
         pygame.draw.rect(DISPLAY, BLACK, (pos_x, pos_y, 120, 120), 1)
-        namesurface = myfont.render(self.name, False, (0, 0, 0))
+        namesurface = myfont.render(self.name, True, (0, 0, 0))
         DISPLAY.blit(namesurface, (pos_x + 10, pos_y + 40))
-        pricesurface = myfont.render(str(self.price)+" ₹", False, (0, 0, 0))
+        pricesurface = myfont.render(str(self.price)+" ₹", True, (0, 0, 0))
         DISPLAY.blit(pricesurface, (pos_x + 10, pos_y + 70))
     
     def action(self, player):
@@ -40,9 +40,29 @@ class City(Square):
             clear_top_message()
             write_top_message("Do you want to buy {} ? (Y / N) - Enter in terminal".format(self.name))
             pygame.display.update()
-            answer = input()
-            if answer == 'Y':
-                self.buy(player)    
+            
+            # for taking apt user input
+            while True:
+                flag = 0
+                pygame.display.update()
+                pygame.time.Clock().tick(1)
+
+                for event in pygame.event.get():
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == K_y:
+                            flag = 1
+                            self.buy(player)
+                            break
+                        if event.key == K_n:
+                            flag =1
+                            break
+                        if event.key == K_ESCAPE:
+                            exit(1)
+                if flag == 1:
+                    break
+
+            # pygame.display.update()
+            # pygame.time.Clock().tick(1)
 
     def fill_bar(self, color):
         pygame.draw.rect(DISPLAY, color, (self.pos_x, self.pos_y + 100, 120, 20), 0)
@@ -67,6 +87,9 @@ class StartSquare(Square):
         namesurface = myfont.render(self.name, False, (0, 0, 0))
         DISPLAY.blit(namesurface, (pos_x + 10, pos_y + 40))
     
+    def action(self, player):
+        player.balance+=100
+    
 class Jail(Square):
 
     def __init__(self, penalty):
@@ -78,4 +101,38 @@ class Jail(Square):
         namesurface = myfont.render(self.name, False, (0, 0, 0))
         DISPLAY.blit(namesurface, (pos_x + 10, pos_y + 40))
 
-    
+    def action(self, player):
+        
+        clear_top_message()
+        
+        if player.balance < 100:
+            write_top_message("Skipping 2 Turns........")
+            pygame.time.Clock().tick(0.5)
+            player.turn_flag = -2
+        else:
+            write_top_message("Pay penalty of 100 rs. (Y / N) ; otherwise skip 2 turns")
+
+            while True:
+                    flag = 0
+                    pygame.display.update()
+                    pygame.time.Clock().tick(1)
+
+                    for event in pygame.event.get():
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == K_y:
+                                flag = 1
+                                player.balance -= 100
+                                player.update_balance()
+                                break
+                            if event.key == K_n:
+                                flag =1
+                                clear_top_message()
+                                write_top_message("Skipping 2 Turns........")
+                                pygame.time.Clock().tick(0.5)
+                                player.turn_flag = -2
+                                break
+                            if event.key == K_ESCAPE:
+                                exit(1)
+                    if flag == 1:
+                        break
+
