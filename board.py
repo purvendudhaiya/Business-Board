@@ -10,6 +10,8 @@ import time
 class Board:
 
     def __init__(self):
+
+        self.player_list = []
         self.square_list= [
             StartSquare(100),
             City('Baroda', 250),
@@ -36,6 +38,10 @@ class Board:
 
         pygame.draw.rect(DISPLAY, BLACK, (299, 99, 602, 602), 1)
         pygame.draw.rect(DISPLAY, WHITE, (300, 100, 600, 600), 0)
+
+        BANK_IMAGE = pygame.image.load(r'./assets/bank_image.jpg', )
+        BANK_IMAGE_SMALL = pygame.transform.smoothscale(BANK_IMAGE, (200, 200))
+        DISPLAY.blit(BANK_IMAGE_SMALL, (500, 300))
         
         # decrease y
         # increase x
@@ -89,9 +95,9 @@ class Player:
         self.balance_pos_x = 100                                                    # x coordinate for player's balance surface 
         self.balance_pos_y = self.name_pos_y
         DISPLAY.blit(self.player_surface, (self.pos_x, self.pos_y))
-        self.player_name_surface = myfont.render(self.name, False, self.player_color)
+        self.player_name_surface = myfont.render(self.name, True, self.player_color)
         DISPLAY.blit(self.player_name_surface, (self.name_pos_x, self.name_pos_y))
-        self.player_balance_surface = myfont.render(str(self.balance)+" ₹", False, self.player_color)
+        self.player_balance_surface = myfont.render(str(self.balance)+" ₹", True, self.player_color)
         DISPLAY.blit(self.player_balance_surface, (self.balance_pos_x, self.balance_pos_y))
     
     def update_balance(self):
@@ -113,16 +119,16 @@ class Player:
                     if event.type == pygame.KEYDOWN:
                         if event.key == K_d:
 
-                            # for i in range(10):
-                            #     pygame.time.Clock().tick(3)
-                            #     clear_top_message()
-                            #     if i % 3 == 0:
-                            #         s = '|'
-                            #     elif i % 3 == 1:
-                            #         s = '/'
-                            #     else:
-                            #         s = '\\'
-                            #     write_top_message("Rolling Dice......{}".format(s))
+                            for i in range(6):
+                                pygame.time.Clock().tick(3)
+                                clear_top_message()
+                                if i % 3 == 0:
+                                    write_top_message("Rolling Dice.")
+                                elif i % 3 == 1:
+                                    write_top_message("Rolling Dice..")
+                                else:
+                                    write_top_message("Rolling Dice...")
+                                
 
                             flag = 1
                             dice_value = random.randint(1,6)
@@ -142,6 +148,7 @@ class Player:
 
     def move(self, steps, b):
         
+        pygame.time.Clock().tick(1)
         for i in range(1, steps+1):
             DISPLAY.blit(Player.player_patch, (self.pos_x, self.pos_y))
             
@@ -155,6 +162,7 @@ class Player:
                 self.pos_x -= 120
             self.player_pos = (self.player_pos + 1) % 16
             
+            pygame.mixer.Sound.play(move_sound)
             pygame.display.update()
             pygame.time.Clock().tick(5)
             
@@ -164,7 +172,7 @@ class Player:
             pygame.time.Clock().tick(5)
         
         print(self.player_pos)
-        (b.square_list[self.player_pos]).action(self)
+        (b.square_list[self.player_pos]).action(self, b.player_list)
     
     def take_turn(self, b):
         if self.turn_flag == 0:
@@ -178,9 +186,9 @@ b.draw_board()
 p1 = Player('Vatsal', RED)
 p2 = Player('Dhruv', BLUE)
 p3 = Player('Purven', GREEN)
-player_list = [p1,p2,p3]
+b.player_list = [p1,p2,p3]
 while True:
-    for i in player_list:
+    for i in b.player_list:
         i.take_turn(b)
         pygame.display.update()
 # val = p1.roll_dice()
